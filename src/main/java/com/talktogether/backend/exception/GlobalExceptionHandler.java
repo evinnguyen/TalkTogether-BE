@@ -10,41 +10,41 @@ import com.talktogether.backend.dto.response.ApiResponse;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    // Bắt các lỗi chưa xác định
-    @ExceptionHandler(value = Exception.class)
-    public ResponseEntity<ApiResponse<Object>> handlingRuntimeException(Exception exception) {
-        ApiResponse<Object> apiResponse = ApiResponse.builder()
-                .code(ErrorCode.UNCATEGORIZED_EXCEPTION.getCode())
-                .message(ErrorCode.UNCATEGORIZED_EXCEPTION.getMessage())
-                .build();
+        // Bắt các lỗi chưa xác định
+        @ExceptionHandler(value = Exception.class)
+        public ResponseEntity<ApiResponse<Object>> handlingRuntimeException(Exception exception) {
+                ApiResponse<Object> apiResponse = ApiResponse.builder()
+                                .code(ErrorCode.UNCATEGORIZED_EXCEPTION.getCode())
+                                .message(ErrorCode.UNCATEGORIZED_EXCEPTION.getMessage())
+                                .build();
 
-        return ResponseEntity.status(ErrorCode.UNCATEGORIZED_EXCEPTION.getStatusCode())
-                .body(apiResponse);
-    }
+                return ResponseEntity.status(ErrorCode.UNCATEGORIZED_EXCEPTION.getStatusCode())
+                                .body(apiResponse);
+        }
 
-    // Bắt các lỗi nghiệp vụ (AppException)
-    @ExceptionHandler(value = AppException.class)
-    public ResponseEntity<ApiResponse<Object>> handlingAppException(AppException exception) {
-        ErrorCode errorCode = exception.getErrorCode();
+        // Bắt các lỗi nghiệp vụ (AppException)
+        @ExceptionHandler(value = AppException.class)
+        public ResponseEntity<ApiResponse<Object>> handlingAppException(AppException exception) {
+                ErrorCode errorCode = exception.getErrorCode();
 
-        ApiResponse<Object> apiResponse = ApiResponse.builder()
-                .code(errorCode.getCode())
-                .message(errorCode.getMessage())
-                .build();
+                ApiResponse<Object> apiResponse = ApiResponse.builder()
+                                .code(errorCode.getCode())
+                                .message(errorCode.getMessage())
+                                .build();
 
-        return ResponseEntity.status(errorCode.getStatusCode())
-                .body(apiResponse);
-    }
+                return ResponseEntity.status(errorCode.getStatusCode())
+                                .body(apiResponse);
+        }
 
-    // Bắt các lỗi Validation dữ liệu đầu vào (@Valid DTO)
-    @ExceptionHandler(value = MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiResponse<Object>> handlingValidation(MethodArgumentNotValidException exception) {
-        String errorMessage = exception.getFieldError() != null ? exception.getFieldError().getDefaultMessage()
-                : "Lỗi dữ liệu đầu vào";
+        // Bắt các lỗi Validation dữ liệu đầu vào (@Valid DTO)
+        @ExceptionHandler(value = MethodArgumentNotValidException.class)
+        public ResponseEntity<ApiResponse<Object>> handlingValidation(MethodArgumentNotValidException exception) {
+                String errorMessage = exception.getFieldError() != null ? exception.getFieldError().getDefaultMessage()
+                                : "Lỗi dữ liệu đầu vào";
 
-        ApiResponse<Object> apiResponse = ApiResponse.builder().code(400).message(errorMessage)
-                .build();
+                ApiResponse<Object> apiResponse = ApiResponse.builder().code(400).message(errorMessage)
+                                .build();
 
-        return ResponseEntity.badRequest().body(apiResponse);
-    }
+                return ResponseEntity.badRequest().body(apiResponse);
+        }
 }
