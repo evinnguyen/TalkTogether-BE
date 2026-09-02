@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.talktogether.backend.dto.request.LoginRequest;
+import com.talktogether.backend.dto.request.RefreshTokenRequest;
 import com.talktogether.backend.dto.request.RegisterRequest;
 import com.talktogether.backend.dto.response.ApiResponse;
 import com.talktogether.backend.dto.response.AuthResponse;
@@ -38,6 +39,26 @@ public class AuthController {
                 .code(1000)
                 .message("Đăng ký tài khoản thành công")
                 .result(result)
+                .build();
+    }
+
+    @PostMapping("/refresh-token")
+    public ApiResponse<AuthResponse> refreshToken(@Valid @RequestBody RefreshTokenRequest request) {
+        AuthResponse result = authService.refreshToken(request);
+        return ApiResponse.<AuthResponse>builder()
+                .code(1000)
+                .message("Cấp lại Refresh token thành công")
+                .result(result)
+                .build();
+    }
+
+    @PostMapping("/logout")
+    public ApiResponse<String> logout(@Valid @RequestBody RefreshTokenRequest request) {
+        authService.logout(request.getRefreshToken());
+        return ApiResponse.<String>builder()
+                .code(1000)
+                .message("Đăng xuất thành công")
+                .result("Đăng xuất thành công")
                 .build();
     }
 

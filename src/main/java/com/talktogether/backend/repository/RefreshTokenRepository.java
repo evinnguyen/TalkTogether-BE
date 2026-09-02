@@ -1,0 +1,25 @@
+package com.talktogether.backend.repository;
+
+import java.util.Optional;
+import java.util.UUID;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.stereotype.Repository;
+
+import com.talktogether.backend.entity.RefreshToken;
+import com.talktogether.backend.entity.User;
+
+@Repository
+public interface RefreshTokenRepository extends JpaRepository<RefreshToken, UUID> {
+
+    Optional<RefreshToken> findByToken(String token);
+
+    Optional<RefreshToken> findByUser(User user);
+
+    @Modifying
+    int deleteByUser(User user);
+
+    @Modifying
+    int deleteByToken(String token);
+}
