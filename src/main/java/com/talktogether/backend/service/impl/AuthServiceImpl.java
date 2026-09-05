@@ -45,7 +45,7 @@ public class AuthServiceImpl implements AuthService {
 
         // 2. Kiểm tra mật khẩu
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new AppException(ErrorCode.INVALID_PASSWORD);
+            throw new AppException(ErrorCode.INVALID_CREDENTIALS);
         }
 
         // 3. Sinh JWT Token
