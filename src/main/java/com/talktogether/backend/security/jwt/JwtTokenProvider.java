@@ -1,5 +1,6 @@
 package com.talktogether.backend.security.jwt;
 
+import java.security.SignatureException;
 import java.util.Date;
 
 import javax.crypto.SecretKey;
@@ -10,11 +11,16 @@ import org.springframework.stereotype.Component;
 import com.talktogether.backend.entity.User;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.extern.slf4j.Slf4j;
 
 @Component
+@Slf4j
 public class JwtTokenProvider {
 
     @Value("${app.jwt.secret}")
@@ -65,9 +71,18 @@ public class JwtTokenProvider {
                     .build()
                     .parseSignedClaims(token);
             return true;
-        } catch (Exception e) { // Nếu Token không hợp lệ thì trả về false
-            return false;
+        } catch (ExpiredJwtException e) { // Nếu Token không hợp lệ thì trả về false
+            log.error("Token JWT đã hết hạn: {}", e.getMessage());
+        } catch (MalformedJwtException e) {
+            log.error("Token JWT không đúng định dạng: {}", e.getMessage());
+        } catch (SecurityException e) {
+            log.error("Chữ ký JWT không hợp lệ: {}", e.getMessage());
+        } catch (UnsupportedJwtException e) {
+            log.error("Token JWT không được hỗ trợ: {}", e.getMessage());
+        } catch (IllegalArgumentException e) {
+            log.error("Token JWT không hợp lệ: {}", e.getMessage());
         }
+        return false;
     }
 
 }

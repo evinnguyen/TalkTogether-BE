@@ -13,6 +13,7 @@ public enum ErrorCode {
     INVALID_CREDENTIALS(1004, "Email hoặc mật khẩu không chính xác", HttpStatus.UNAUTHORIZED),
     UNAUTHENTICATED(1005, "Chưa được xác thực hoặc token không hợp lệ", HttpStatus.UNAUTHORIZED),
     REFRESH_TOKEN_EXPIRED(1006, "Refresh Token đã hết hạn. Vui lòng đăng nhập lại", HttpStatus.UNAUTHORIZED),
+    PASSWORD_NOT_CHANGED(1007, "Mật khẩu mới không được giống mật khẩu cũ", HttpStatus.BAD_REQUEST),
     INVALID_REFRESH_TOKEN(1007, "Refresh Token không hợp lệ hoặc không tồn tại", HttpStatus.BAD_REQUEST);
 
     private final int code;
