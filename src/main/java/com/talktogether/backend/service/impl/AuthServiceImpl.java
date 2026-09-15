@@ -111,8 +111,6 @@ public class AuthServiceImpl implements AuthService {
         String newAccessToken = jwtTokenProvider.generateToken(user);
         RefreshToken updateRefreshToken = createOrUpdateRefreshToken(user);
 
-        UserResponse userResponse = mapToUserResponse(user);
-
         return AuthResponse.builder()
                 .accessToken(newAccessToken)
                 .refreshToken(updateRefreshToken.getToken())
