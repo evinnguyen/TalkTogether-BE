@@ -5,7 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import com.talktogether.backend.entity.enums.RoomType;
+import com.talktogether.backend.entity.enums.Language;
+
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -15,6 +16,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
@@ -36,15 +39,24 @@ public class Room {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(name = "name")
-    private String name;
+    @Column(name = "title")
+    private String title;
 
-    @Column(name = "avatar_url")
-    private String avatarUrl;
+    @Enumerated(EnumType.STRING)
+    @Column (name = "language", nullable = false)
+    private Language language;
 
-    @Enumerated (EnumType.STRING)
-    @Column(name = "type", nullable = false)
-    private RoomType type;
+    @Column(name = "max_participants", nullable = false)
+    @Builder.Default
+    private int maxParticipants = 4;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name="level", nullable = false)
+    private String level;
+
+    @ManyToOne 
+    @JoinColumn(name = "creator_id", nullable = false)
+    private User creator;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -54,6 +66,7 @@ public class Room {
     private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private List<RoomMember> members = new ArrayList<>();
 
     @PrePersist

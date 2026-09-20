@@ -16,7 +16,11 @@ public enum ErrorCode {
     PASSWORD_NOT_CHANGED(1009, "Mật khẩu mới không được giống mật khẩu cũ", HttpStatus.BAD_REQUEST),
     INVALID_CONFIRM_PASSWORD(1010, "Mật khẩu xác nhận không trùng khớp", HttpStatus.BAD_REQUEST),
     INVALID_REFRESH_TOKEN(1007, "Refresh Token không hợp lệ hoặc không tồn tại", HttpStatus.BAD_REQUEST),
-    INVALID_REQUEST(1011, "Yêu cầu không hợp lệ", HttpStatus.BAD_REQUEST);
+    INVALID_REQUEST(1011, "Yêu cầu không hợp lệ", HttpStatus.BAD_REQUEST),
+    ROOM_NOT_FOUND(2001, "Phòng không tồn tại hoặc đã bị giải tán", HttpStatus.NOT_FOUND),
+    ROOM_FULL(2002, "Phòng đã đủ số lượng người tham gia", HttpStatus.BAD_REQUEST),
+    NOT_IN_ROOM(2003, "Bạn hiện không ở trong phòng nào", HttpStatus.BAD_REQUEST),
+    ALREADY_IN_THIS_ROOM(2004, "Bạn đã ở trong phòng này rồi", HttpStatus.BAD_REQUEST);
 
     private final int code;
     private final String message;
