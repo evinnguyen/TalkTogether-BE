@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.UUID;
 
 import com.talktogether.backend.entity.enums.Language;
-
+import com.talktogether.backend.entity.enums.Level;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -27,14 +27,14 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Entity 
-@Table(name="rooms")
-@Data 
-@NoArgsConstructor 
-@AllArgsConstructor 
-@Builder 
+@Entity
+@Table(name = "rooms")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Room {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -43,7 +43,7 @@ public class Room {
     private String title;
 
     @Enumerated(EnumType.STRING)
-    @Column (name = "language", nullable = false)
+    @Column(name = "language", nullable = false)
     private Language language;
 
     @Column(name = "max_participants", nullable = false)
@@ -51,17 +51,18 @@ public class Room {
     private int maxParticipants = 4;
 
     @Enumerated(EnumType.STRING)
-    @Column(name="level", nullable = false)
-    private String level;
+    @Column(name = "level", nullable = false)
+    private Level level;
 
-    @ManyToOne 
+    @ManyToOne
     @JoinColumn(name = "creator_id", nullable = false)
     private User creator;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    // updatedAt sẽ được cập nhật mỗi khi có tin nhắn mới hoặc thông tin phòng đổi (dùng để sort phòng chat lên đầu)
+    // updatedAt sẽ được cập nhật mỗi khi có tin nhắn mới hoặc thông tin phòng đổi
+    // (dùng để sort phòng chat lên đầu)
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
@@ -74,10 +75,10 @@ public class Room {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
+
     @PreUpdate
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();
     }
 
-    
 }

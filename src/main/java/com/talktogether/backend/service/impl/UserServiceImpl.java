@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +16,7 @@ import com.talktogether.backend.exception.AppException;
 import com.talktogether.backend.exception.ErrorCode;
 import com.talktogether.backend.repository.RefreshTokenRepository;
 import com.talktogether.backend.repository.UserRepository;
+import com.talktogether.backend.security.SecurityUtils;
 import com.talktogether.backend.service.UserService;
 
 import jakarta.transaction.Transactional;
@@ -32,14 +32,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse getCurrentUser() {
-        User currentUser = getAuthenticatedUser();
+        User currentUser = SecurityUtils.getCurrentUser();
         return mapToUserResponse(currentUser);
     }
 
     @Override
     public UserResponse updateProfile(UpdateProfileRequest request) {
 
-        User currentUser = getAuthenticatedUser();
+        User currentUser = SecurityUtils.getCurrentUser();
 
         if (request.getAvatarUrl() != null) {
             currentUser.setAvatarUrl(request.getAvatarUrl());
@@ -57,7 +57,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void changePassword(ChangePasswordRequest request) {
-        User user = getAuthenticatedUser();
+        User user = SecurityUtils.getCurrentUser();
 
         if (!passwordEncoder.matches(request.getOldPassword(), user.getPassword())) {
             throw new AppException(ErrorCode.INVALID_CREDENTIALS);
@@ -76,14 +76,6 @@ public class UserServiceImpl implements UserService {
         refreshTokenRepository.deleteByUser(user);
     }
 
-    private User getAuthenticatedUser() {
-        var authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !(authentication.getPrincipal() instanceof User user)) {
-            throw new AppException(ErrorCode.UNAUTHENTICATED);
-        }
-        return user;
-    }
-
     private UserResponse mapToUserResponse(User user) {
         return UserResponse.builder()
                 .id(user.getId())
@@ -96,7 +88,7 @@ public class UserServiceImpl implements UserService {
     }
 
     public List<UserResponse> searchUsers(String keyword) {
-        User currentUser = getAuthenticatedUser();
+        User currentUser = SecurityUtils.getCurrentUser();
         if (keyword == null || keyword.trim().isEmpty()) {
             return Collections.emptyList();
         }
