@@ -1,5 +1,6 @@
 package com.talktogether.backend.dto.response;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import com.talktogether.backend.entity.enums.RoomRole;
@@ -18,4 +19,5 @@ public class MemberResponse {
     private String fullName;
     private String avatarUrl;
     private RoomRole role;
+    private LocalDateTime joinedAt;
 }

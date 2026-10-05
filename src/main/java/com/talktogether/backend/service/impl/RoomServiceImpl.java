@@ -1,8 +1,13 @@
 package com.talktogether.backend.service.impl;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,9 +41,58 @@ public class RoomServiceImpl implements RoomService {
     @Override
     @Transactional(readOnly = true)
     public List<RoomResponse> getLobbyRooms(Language language, Level level) {
+        // Lấy danh sách phòng kèm thông tin Creator
         List<Room> rooms = roomRepository.findRoomForLobby(language, level);
-        return rooms.stream().map(this::mapToRoomResponse).toList();
+        if (rooms.isEmpty()) {
+            return Collections.emptyList();
+        }
 
+        // Gom toàn bộ roomId lại thành 1 danh sách
+        List<UUID> roomIds = rooms.stream()
+                .map(Room::getId)
+                .toList();
+
+        // Lấy toàn bộ thành viên của tất cả các phòng trên
+        List<RoomMember> allMembers = roomMemberRepository.findMembersByRoomIds(roomIds);
+
+        // Nhóm các thành viên theo từng roomId trên RAM
+        Map<UUID, List<RoomMember>> membersByRoomId = allMembers.stream()
+                .collect(Collectors.groupingBy(rm -> rm.getRoom().getId()));
+
+        return rooms.stream().map(room -> mapToRoomResponseWithMembers(
+                room, membersByRoomId.getOrDefault(room.getId(), Collections.emptyList()))).toList();
+
+    }
+
+    private RoomResponse mapToRoomResponseWithMembers(Room room, List<RoomMember> roomMembers) {
+        List<MemberResponse> memberResponses = roomMembers.stream()
+                .map(m -> MemberResponse.builder()
+                        .userId(m.getUser().getId())
+                        .fullName(m.getUser().getFullName())
+                        .avatarUrl(m.getUser().getAvatarUrl())
+                        .role(m.getRole())
+                        .joinedAt(m.getJoinedAt())
+                        .build())
+                .toList();
+
+        CreatorDto creatorDto = CreatorDto.builder()
+                .id(room.getCreator().getId())
+                .name(room.getCreator().getFullName())
+                .avatar(room.getCreator().getAvatarUrl())
+                .isVerified(false)
+                .build();
+
+        return RoomResponse.builder()
+                .id(room.getId())
+                .title(room.getTitle())
+                .language(room.getLanguage())
+                .level(room.getLevel())
+                .currentParticipants(roomMembers.size())
+                .maxParticipants(room.getMaxParticipants())
+                .creator(creatorDto)
+                .members(memberResponses)
+                .createdAt(room.getCreatedAt())
+                .build();
     }
 
     @Override
@@ -166,7 +220,7 @@ public class RoomServiceImpl implements RoomService {
                 .toList();
 
         CreatorDto creatorDto = CreatorDto.builder()
-                .id(room.getCreator().getId().toString())
+                .id(room.getCreator().getId())
                 .name(room.getCreator().getFullName())
                 .avatar(room.getCreator().getAvatarUrl())
                 .isVerified(false)
